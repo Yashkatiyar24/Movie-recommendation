@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 🎬 Movie Recommender System
 Recommend similar movies with a clean Streamlit UI and poster images from TMDb. Precomputed similarity keeps responses fast, while a smart poster cache avoids repeated failed fetches.
 
@@ -75,3 +76,24 @@ For production, keep your TMDb key in environment variables or Space Secrets—n
 To reset poster cache, delete files under poster_cache/.
 Python 3.10+ is recommended; Spaces config uses 3.10.
 Enjoy exploring movies! 🍿
+=======
+---
+title: Streamlit Template Space
+emoji: 🚀
+colorFrom: red
+colorTo: red
+sdk: docker
+app_port: 8501
+tags:
+  - streamlit
+pinned: false
+short_description: Streamlit template space
+---
+
+# Welcome to Streamlit!
+
+Edit `/src/streamlit_app.py` to customize this app to your heart's desire. :heart:
+
+If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
+forums](https://discuss.streamlit.io).
+>>>>>>> b96ca83 (Duplicate from streamlit/streamlit-template-space)
