@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 title: Movie Recommender System
 emoji: 🎬
 colorFrom: red
@@ -7,120 +6,56 @@ colorTo: gray
 sdk: streamlit
 app_file: app.py
 python_version: "3.10"
-=======
-title: Movie Recommender
-emoji: 🚀
-colorFrom: red
-colorTo: red
-sdk: docker
-app_port: 8501
-tags:
-- streamlit
->>>>>>> 33abd67 (initial commit)
 pinned: false
 license: mit
 short_description: Content-based movie recommendations with cached TMDb posters
 ---
 
-# 🎬 Movie Recommender System
+# Movie Recommender System
 
-Recommend similar movies with a clean Streamlit UI and poster images from TMDb. Precomputed similarity keeps responses fast, while a smart poster cache avoids repeated failed fetches.
+This Streamlit app recommends similar movies and shows posters from TMDb. It separates UI from data logic and caches both successful posters and known failures for robust, fast performance.
 
-- Live demo: https://huggingface.co/spaces/yashkatiyar/movie-recommender
+## What’s inside
+- UI: `app.py`
+- Data & fetching logic: `recommender.py`
+- Data files: `movies_dict.pkl`, `similarity.pkl`
+- Poster cache: `poster_cache/` (images + `.fail` marker files)
 
-## ✨ Features
-- Fast, content-based recommendations using a precomputed similarity matrix
-- Polished Streamlit UI with responsive layout and card-style results
-- Poster fetching from TMDb with local caching
-  - Stores downloaded posters under `poster_cache/`
-  - Records permanent failures as `.fail` marker files to skip bad IDs
-- Works even without a TMDb key (shows an initial-letter placeholder instead of posters)
-- Simple, maintainable split between UI (`app.py`) and logic (`recommender.py`)
+## Key improvements
+1. Poster fetching reliability
+   - Posters are cached to `poster_cache/<movie_id>.jpg`.
+   - Known failures are cached with `poster_cache/<movie_id>.fail` to skip re-trying bad IDs or missing posters.
+2. Error handling in UI
+   - No warnings are shown. If a poster is missing, the movie title is displayed only.
+3. Caching logic
+   - Failure marker files (`.fail`) prevent repeated failed fetch attempts for the same ID.
+4. API data validation
+   - Invalid or missing `movie_id` as well as missing `poster_path` are handled gracefully and marked as failures.
+5. Code optimization
+   - Data fetching and recommendation logic live in `recommender.py`; Streamlit UI is in `app.py`.
 
-## 🧰 Tech stack
-- Streamlit, pandas, numpy, requests
-- Data artifacts: `movies_dict.pkl` (movie meta) and `similarity.pkl` (precomputed similarity matrix)
-- Hugging Face Spaces + Git LFS for large files
+## Setup (local)
 
-## 🚀 Quickstart (local)
+Install dependencies (Python 3.10 recommended):
 
-1) Install dependencies
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-2) Optional: export TMDb API key (posters)
-```bash
-# macOS/Linux (zsh)
-export TMDB_API_KEY="<your_tmdb_key>"
-```
+Run the app:
 
-3) Run the app
 ```bash
 streamlit run app.py
 ```
 
-Open the printed local URL in your browser. Type a movie title and click Recommend.
+## Deploy to Hugging Face Spaces
 
-## 🔧 Configuration
-- TMDB_API_KEY (optional): If set, posters are fetched and cached. If not set, titles still appear with placeholders.
-- Poster cache: created at runtime under `poster_cache/`. Delete its contents to clear the cache and failure markers.
+1. Create a new Space on Hugging Face with SDK set to “Streamlit”.
+2. Push this repository to the Space (web upload or `git push`). Large `.pkl` files are tracked with Git LFS via `.gitattributes`.
+3. In the Space settings, add a Secret named `TMDB_API_KEY` with your TMDb API key (optional but recommended for posters).
+4. The app entrypoint is `app.py`.
 
-## 🧠 How it works
-- `movies_dict.pkl` is loaded into a pandas DataFrame (with a `title` column and a `movie_id` column for TMDb).
-- `similarity.pkl` is a precomputed similarity matrix aligned with the movies DataFrame.
-- Given a query title, we look up its index, sort by similarity, and return the top N titles.
-- For each recommended movie, we optionally fetch and cache its poster using TMDb.
-  - Missing or invalid poster responses create a `.fail` marker to avoid re-trying.
-
-## 📁 Project structure
-```
-.
-├─ app.py                 # Streamlit UI
-├─ recommender.py         # Data loading, recommendation + poster cache
-├─ movies_dict.pkl        # Movie metadata (pickled dict -> DataFrame)
-├─ similarity.pkl         # Precomputed similarity matrix (NumPy array)
-├─ poster_cache/          # Cached poster images + .fail markers
-├─ requirements.txt       # Python dependencies
-├─ .gitattributes         # Git LFS rules (includes *.pkl)
-├─ .gitignore             # Local ignores (venv, IDE, cache)
-└─ README.md              # This file
-```
-
-## ☁️ Deploy to Hugging Face Spaces
-
-1) Create a Space (SDK: Streamlit) at https://huggingface.co/spaces/new
-
-2) Push this repo (PKL files tracked by Git LFS)
-```bash
-git lfs install
-# first time only
-huggingface-cli login  # or: hf auth login
-
-git remote add huggingface https://huggingface.co/spaces/<username>/<space-name>
-git push -u huggingface main
-```
-
-3) Add a secret for posters
-- Space Settings → Secrets → Add new secret:
-  - Name: TMDB_API_KEY
-  - Value: your TMDb API key
-
-The Space builds from `requirements.txt` and launches `app.py` automatically.
-
-## ❓ Troubleshooting
-- Build succeeds but posters don’t appear
-  - Ensure TMDB_API_KEY is set in the Space Secrets. Without it, placeholders show by design.
-- No titles in the dropdown
-  - Confirm `movies_dict.pkl` loads and includes a `title` column aligned with `similarity.pkl`.
-- LFS push errors
-  - Make sure Git LFS is installed and `.gitattributes` includes `*.pkl`.
-- ModuleNotFoundError
-  - Rebuild the Space or pin versions in `requirements.txt`. Locally, run `pip install -r requirements.txt` again.
-
-## 📝 Notes
-- For production, keep your TMDb key in environment variables or Space Secrets—never hard-code it.
-- To reset poster cache, delete files under `poster_cache/`.
-- Python 3.10+ is recommended; Spaces config uses 3.10.
-
-Enjoy exploring movies! 🍿
+## Notes
+- To clear the poster cache and failure markers, delete files under `poster_cache/`.
+- For production, set `TMDB_API_KEY` as a secret in your Space instead of embedding it in code.
+- If you see no recommendations, ensure the selected movie title exists in `movies_dict.pkl` and `similarity.pkl` is aligned.
