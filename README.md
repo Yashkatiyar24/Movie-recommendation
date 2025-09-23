@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 title: Movie Recommender System
 emoji: 🎬
 colorFrom: red
@@ -6,6 +7,16 @@ colorTo: gray
 sdk: streamlit
 app_file: app.py
 python_version: "3.10"
+=======
+title: Movie Recommender
+emoji: 🚀
+colorFrom: red
+colorTo: red
+sdk: docker
+app_port: 8501
+tags:
+- streamlit
+>>>>>>> 33abd67 (initial commit)
 pinned: false
 license: mit
 short_description: Content-based movie recommendations with cached TMDb posters
